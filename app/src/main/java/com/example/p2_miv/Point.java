@@ -35,7 +35,7 @@ public class Point {
 
     public boolean isOffScreen(){
         //Log.d("Point", "Punto eliminado: X: " + x + ", Y: " + y + ", Z: " + z);
-        return (z <= 0.1);  // Delete point after reaching cam
+        return (z <= 0.0f);  // Delete point after reaching cam
     }
 
     public void draw(GL10 gl){
@@ -43,7 +43,7 @@ public class Point {
 
         gl.glTranslatef(x, y, -z); // Transalate position depending on z coord
         gl.glColor4f(1.0f, 0.0f, 0.0f, 1.0f); // White color
-        gl.glPointSize(8.0f);
+        gl.glPointSize(12.0f);
         gl.glEnable(GL10.GL_POINT_SMOOTH);
 
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY); // Activate buffers

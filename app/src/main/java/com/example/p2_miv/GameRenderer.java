@@ -67,7 +67,7 @@ public class GameRenderer implements Renderer {
         gl.glLoadIdentity();                 // Reset projection matrix
 
         // Use perspective projection
-        GLU.gluPerspective(gl, 60, (float) width / height, 0.1f, 100.f);
+        GLU.gluPerspective(gl, 60, (float) width / height, 0.1f, 100.0f);
 
         gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix
         gl.glLoadIdentity();                 // Reset
@@ -75,11 +75,11 @@ public class GameRenderer implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        //setOrthographicProjection(gl);
+        //setOrthographicProjection(gl); // Usar para HUD 2D
         setPerspectiveProjection(gl);
         // Limpiar la pantalla
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        GLU.gluLookAt(gl, 0, 0, -5.0f, 0f, 0f, 0f, 0f, 1f, 0f);
+        GLU.gluLookAt(gl, 0, 0.2f, -5.0f, 0f, 0f, 0f, 0f, 1f, 0f);
 
         gl.glDisable(GL10.GL_DEPTH_TEST);
 

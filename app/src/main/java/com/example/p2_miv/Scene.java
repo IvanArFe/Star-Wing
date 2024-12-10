@@ -10,8 +10,8 @@ import javax.microedition.khronos.opengles.GL10;
 public class Scene {
     private ArrayList<Point> points = new ArrayList<>();
     private static final int COLUMNS = 10; // Número de columnas de la matriz
-    private static final int POINTS_PER_COLUMN = 5; // Número de puntos por columna
-    private static final float ROW_SPACING = 0.2f; // Espaciado vertical
+    private static final int POINTS_PER_COLUMN = 8; // Número de puntos por columna
+    private static final float ROW_SPACING = 1.0f; // Espaciado vertical
     private static final float HORIZON_Z = 5.0f; // Coordenada Z del horizonte
     private static final float MARGIN_X = 0.05f;
 
@@ -20,38 +20,29 @@ public class Scene {
     }
 
     private void generateColumns() {
-        for (int column = 0; column < COLUMNS; column++) {
-            // Columna inicial en la posición X
-            float x = -1.0f + MARGIN_X + column * (2.0f - 2 * MARGIN_X) / (COLUMNS - 1);
+        float x = 0.0f; // Coordenada fija X
+        float y = -0.5f; // Coordenada fija Y
+        float z = HORIZON_Z; // Coordenada inicial Z
 
-            // Generar los puntos dentro de la columna
-            for (int i = 0; i < POINTS_PER_COLUMN; i++) {
-                // Asignar la posición Z y Y a cada punto
-                float z = HORIZON_Z - (i * ROW_SPACING);
-                float y = -0.45f - (i * ROW_SPACING); // Fijamos Y para todos los puntos de la columna (puedes hacerlo variable si lo deseas)
-                points.add(new Point(x, y, z, 0.05f));  // Velocidad fija
-            }
+        // Crear puntos en una única posición inicial
+        for (int i = 0; i < POINTS_PER_COLUMN; i++) {
+            points.add(new Point(x, y, z, 0.05f)); // Velocidad fija
+            z -= ROW_SPACING; // Espaciado entre puntos
         }
     }
 
     public void updateScene(){
         Log.d("Scene", "Points count: "+points.size());
         // Update points position
-        Iterator<Point> it = points.iterator();
-        while(it.hasNext()){
-            Point p = it.next();
+        for(Point p : points){
             p.updatePos();
             Log.d("Scene", "Updated point: X=" + p.getX() + ", Y=" + p.getY() + ", Z=" + p.getZ());
             if(p.isOffScreen()){
-                it.remove(); // Delete point when reaching cam
+                p.setZ(HORIZON_Z); // Delete point when reaching cam
             }
         }
-
-        // Generar una nueva fila de puntos en el horizonte
-        if (points.isEmpty() || points.get(points.size() -1).getZ() < HORIZON_Z - ROW_SPACING) {
-            generateColumns();
-        }
     }
+
     public void draw(GL10 gl){
         for(Point p : points){
             p.draw(gl);
