@@ -10,7 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class Scene {
     private ArrayList<Point> points = new ArrayList<>();
     private static final int COLUMNS = 10; // Número de columnas de la matriz
-    private static final int POINTS_PER_COLUMN = 20; // Número de puntos por columna
+    private static final int POINTS_PER_COLUMN = 5; // Número de puntos por columna
     private static final float ROW_SPACING = 0.2f; // Espaciado vertical
     private static final float HORIZON_Z = 5.0f; // Coordenada Z del horizonte
     private static final float MARGIN_X = 0.05f;
@@ -29,7 +29,7 @@ public class Scene {
                 // Asignar la posición Z y Y a cada punto
                 float z = HORIZON_Z - (i * ROW_SPACING);
                 float y = -0.45f - (i * ROW_SPACING); // Fijamos Y para todos los puntos de la columna (puedes hacerlo variable si lo deseas)
-                points.add(new Point(x, y, z, 0.5f));  // Velocidad fija
+                points.add(new Point(x, y, z, 0.05f));  // Velocidad fija
             }
         }
     }
