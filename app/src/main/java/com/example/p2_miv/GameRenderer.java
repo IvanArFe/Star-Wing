@@ -79,7 +79,7 @@ public class GameRenderer implements Renderer {
         setPerspectiveProjection(gl);
         // Limpiar la pantalla
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        GLU.gluLookAt(gl, 0, 0.2f, -5.0f, 0f, 0f, 0f, 0f, 1f, 0f);
+        GLU.gluLookAt(gl, 0, 1.2f, -5.0f, 0f, 0f, 0f, 0f, 1f, 0f);
 
         gl.glDisable(GL10.GL_DEPTH_TEST);
 
