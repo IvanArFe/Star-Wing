@@ -35,7 +35,7 @@ public class Point {
 
     public boolean isOffScreen(){
         //Log.d("Point", "Punto eliminado: X: " + x + ", Y: " + y + ", Z: " + z);
-        return (this.getZ() <= 2.0f);  // Delete point after reaching cam
+        return (this.getZ() <= -4.9f);  // Delete point after reaching cam
     }
 
     public void draw(GL10 gl){

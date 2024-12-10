@@ -14,23 +14,31 @@ import javax.microedition.khronos.opengles.GL10;
 public class GameRenderer implements Renderer {
 
     private Background background;
+    private MainActivity mainActivity;
     private Context context;
     private int width;
     private int height;
     private float[] vertices;
     private FloatBuffer vertexBuffer;
-    private FloatBuffer textureBuffer;
+
     private Scene scene;
+    private Starship starship;
+    private float starshipX = 0.0f;
 
     public GameRenderer(Context context){
         this.context = context;
         this.scene = new Scene();
+        this.starship = new Starship(context, R.raw.starwing);
+        this.mainActivity = (MainActivity) context;
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Image Background color
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        gl.glEnable(GL10.GL_CULL_FACE);
+        gl.glCullFace(GL10.GL_BACK);
 
+        // Load and draw background
         background = new Background();
         background.loadTexture(gl, context);
     }
@@ -46,15 +54,16 @@ public class GameRenderer implements Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        if(height == 0){ height = 1; }
+        float aspect = (float) width / height;
         this.width = width;
         this.height = height;
 
-        updateVerticesForAspectRatio(width, height);
         gl.glViewport(0, 0, width, height);
-
+        setPerspectiveProjection(gl, aspect);
     }
 
-    private void setPerspectiveProjection(GL10 gl) {
+    private void setPerspectiveProjection(GL10 gl, float aspect) {
         gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
         gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
         gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
@@ -67,7 +76,7 @@ public class GameRenderer implements Renderer {
         gl.glLoadIdentity();                 // Reset projection matrix
 
         // Use perspective projection
-        GLU.gluPerspective(gl, 60, (float) width / height, 0.1f, 100.0f);
+        GLU.gluPerspective(gl, 60, aspect, 0.1f, 100.0f);
 
         gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix
         gl.glLoadIdentity();                 // Reset
@@ -76,17 +85,11 @@ public class GameRenderer implements Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         //setOrthographicProjection(gl); // Usar para HUD 2D
-        setPerspectiveProjection(gl);
-        // Limpiar la pantalla
+        // Clear color and depth buffers using clear-value set earlier
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        GLU.gluLookAt(gl, 0, 1.2f, -5.0f, 0f, 0f, 0f, 0f, 1f, 0f);
+        GLU.gluLookAt(gl, 0, 0, -5.0f, 0f, 0.0f, 0f, 0f, 1f, 0f);
 
-        gl.glDisable(GL10.GL_DEPTH_TEST);
-
-        // Draw background
-        gl.glPushMatrix();
         background.draw(gl);
-        gl.glPopMatrix();
 
         // Draw and update points
         gl.glPushMatrix();
@@ -94,37 +97,45 @@ public class GameRenderer implements Renderer {
         scene.draw(gl); // Draw points
         gl.glPopMatrix();
 
-        gl.glEnable(GL10.GL_DEPTH_TEST);
+        /*
+        updateMovement();
 
+        // Draw starship
+        gl.glPushMatrix();
+        gl.glScalef(0.5f, 0.5f, 0.5f);
+        gl.glTranslatef(starshipX, 0.3f, -8.0f);
+        starship.draw(gl);
+        gl.glPopMatrix();*/
     }
 
-    private void updateVerticesForAspectRatio(int screenWidth, int screenHeight) {
-        // Calcular la relación de aspecto
-        float aspectRatio = (float) screenWidth / screenHeight;
-        float aspectRatioImage = 1.0f;
+    public void handleMovement(char input){
+        float move = 0.05f;
+        float maxHorizontal = 1.0f;
 
-        float scaleX = 1.0f;
-        float scaleY = 1.0f;
+        switch(input){
+            case 'A':
+                starshipX += move;
+                if(starshipX > maxHorizontal){
+                    starshipX = maxHorizontal;
+                }
+                break;
 
-        if(aspectRatio > aspectRatioImage){
-            scaleX = aspectRatioImage / aspectRatio;
-        } else {
-            scaleY = aspectRatioImage / aspectRatio;
+            case 'D':
+                starshipX -= move;
+                if(starshipX < maxHorizontal){
+                    starshipX = -maxHorizontal;
+                }
+                break;
         }
-
-        // Actualizar las coordenadas de los vértices
-        vertices = new float[] {
-                -scaleX, -scaleY, 0.0f,  // Inferior izquierdo
-                scaleX, -scaleY, 0.0f,  // Inferior derecho
-                -scaleX,  scaleY, 0.0f,  // Superior izquierdo
-                scaleX,  scaleY, 0.0f   // Superior derecho
-        };
-
-        // Actualizar el buffer de vértices
-        ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
-        vbb.order(ByteOrder.nativeOrder());
-        vertexBuffer = vbb.asFloatBuffer();
-        vertexBuffer.put(vertices);
-        vertexBuffer.position(0);
     }
+
+    private void updateMovement(){
+        // Continuous movement
+        if(mainActivity.isLeftMove()){
+            handleMovement('A');
+        } else if (mainActivity.isRightMove()){
+            handleMovement('D');
+        }
+    }
+
 }
