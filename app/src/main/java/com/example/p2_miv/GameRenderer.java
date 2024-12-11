@@ -31,7 +31,7 @@ public class GameRenderer implements Renderer {
         this.starship = new Starship(context, R.raw.starwing);
         this.mainActivity = (MainActivity) context;
     }
-
+d
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Image Background color
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -100,15 +100,17 @@ public class GameRenderer implements Renderer {
         scene.draw(gl); // Draw points
         gl.glPopMatrix();
 
-        /*
         updateMovement();
 
         // Draw starship
         gl.glPushMatrix();
-        gl.glScalef(0.5f, 0.5f, 0.5f);
-        gl.glTranslatef(starshipX, 0.3f, -8.0f);
+        gl.glScalef(2.5f, 2.5f, 2.5f);
+        gl.glRotatef(180, 0, 1, 0);
+        gl.glTranslatef(starshipX, 0.3f, 5f);
+        //gl.glEnable(GL10.GL_LIGHTING);
         starship.draw(gl);
-        gl.glPopMatrix();*/
+        //gl.glDisable(GL10.GL_LIGHTING);
+        gl.glPopMatrix();
     }
 
     public void handleMovement(char input){
