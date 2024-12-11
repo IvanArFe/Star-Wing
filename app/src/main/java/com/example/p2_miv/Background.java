@@ -80,13 +80,14 @@ public class Background {
         gl.glColor4f(1,1,1,1);
 
         // Configurar la proyección ortográfica
-        gl.glMatrixMode(GL10.GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glOrthof(-1, 1, -1, 1, -1, 1);
+        //gl.glMatrixMode(GL10.GL_PROJECTION);
+        //gl.glLoadIdentity();
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW);
-        gl.glLoadIdentity();
-
+        //gl.glMatrixMode(GL10.GL_MODELVIEW);
+        //gl.glLoadIdentity();
+        gl.glFrontFace(GL10.GL_CCW);
+        gl.glEnable(GL10.GL_CULL_FACE);
+        gl.glCullFace(GL10.GL_BACK);
         gl.glEnable(GL10.GL_TEXTURE_2D);
 
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
@@ -95,13 +96,17 @@ public class Background {
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
         gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
 
-
+        // Front face
+        gl.glPushMatrix();
+        gl.glTranslatef(0.0f, 0.0f, 50.0f);
         gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+        gl.glPopMatrix();
 
         // Deshabilitar estados
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         gl.glDisable(GL10.GL_TEXTURE_2D);
+        gl.glDisable(GL10.GL_CULL_FACE);
     }
 
 }

@@ -30,20 +30,20 @@ public class Point {
     }
 
     public void updatePos(){
-        z -= speed; // Go forward to cam
+        z += speed; // Go forward to cam
     }
 
     public boolean isOffScreen(){
-        //Log.d("Point", "Punto eliminado: X: " + x + ", Y: " + y + ", Z: " + z);
-        return (this.getZ() <= -4.9f);  // Delete point after reaching cam
+        Log.d("Point", "Punto eliminado Z: " + z);
+        return (this.getZ() >= 15.0f);  // Delete point after reaching cam
     }
 
     public void draw(GL10 gl){
         gl.glPushMatrix();
 
         gl.glTranslatef(x, y, -z); // Transalate position depending on z coord
-        gl.glColor4f(1.0f, 0.0f, 0.0f, 1.0f); // White color
-        gl.glPointSize(12.0f);
+        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // White color
+        gl.glPointSize(6.0f);
         gl.glEnable(GL10.GL_POINT_SMOOTH);
 
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY); // Activate buffers
