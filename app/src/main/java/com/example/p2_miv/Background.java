@@ -14,10 +14,11 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 public class Background {
-    int[] textureIDs = new int[1];
+    int[] textureIDs = new int[2];
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
-    private Context context;
+    private int texIndex = 0;
+    private int texID;
 
     /* Vertices to cover screen in order to load background img */
     private float[] vertices = {
@@ -28,10 +29,10 @@ public class Background {
     };
 
     private float[] textureCoords = {
-            1/3f, 1.0f, //Bottom left to load second texture
-            2/3f, 1.0f, //Bottom right to load second texture
-            1/3f, 0.0f, //Top left to load second texture
-            2/3f, 0.0f  //Top right to load second texture
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f
     };
 
     public Background(){
@@ -47,37 +48,35 @@ public class Background {
         tbb.order(ByteOrder.nativeOrder());
         textureBuffer = tbb.asFloatBuffer();
         textureBuffer.put(textureCoords);
+
         textureBuffer.position(0);
     }
 
-    public void loadTexture(GL10 gl, Context context){
-        gl.glGenTextures(1, textureIDs, 0); // Generate texture-ID array
+    public void loadTexture(GL10 gl, Context context, int filename){
+        gl.glGenTextures(1, textureIDs, texIndex); // Generate texture-ID array
+        texID = texIndex;
 
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIDs[0]);   // Bind to texture ID
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIDs[texID]);   // Bind to texture ID
         // Set up texture filters
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 
-        InputStream istream = context.getResources().openRawResource(R.raw.background);
-
         Bitmap bitmap;
-        try {
-            // Read and decode input as bitmap
-            bitmap = BitmapFactory.decodeStream(istream);
-        } finally {
-            try {
-                istream.close();
-            } catch(IOException e) { }
-        }
+        // Read and decode input as bitmap
+        bitmap = BitmapFactory.decodeResource(context.getResources(), filename);
 
         // Build Texture from loaded bitmap for the currently-bind texture ID
         GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
         bitmap.recycle();
+        texIndex++;
     }
 
     public void draw(GL10 gl) {
+        gl.glEnable(GL10.GL_BLEND);
+        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glDisable(GL10.GL_LIGHTING);
         gl.glColor4f(1,1,1,1);
-
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIDs[texID]);
         gl.glFrontFace(GL10.GL_CCW);
         gl.glEnable(GL10.GL_CULL_FACE);
         gl.glCullFace(GL10.GL_BACK);
@@ -100,6 +99,8 @@ public class Background {
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         gl.glDisable(GL10.GL_TEXTURE_2D);
         gl.glDisable(GL10.GL_CULL_FACE);
+        gl.glDisable(GL10.GL_BLEND);
+        gl.glEnable(GL10.GL_LIGHTING);
     }
 
 }

@@ -12,7 +12,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class GameRenderer implements Renderer {
-
     private Background background;
     private MainActivity mainActivity;
     private Context context;
@@ -43,12 +42,15 @@ public class GameRenderer implements Renderer {
         gl.glEnable(GL10.GL_NORMALIZE);
 
         // Load and draw background
+        gl.glPushMatrix();
         background = new Background();
-        background.loadTexture(gl, context);
+        background.loadTexture(gl, context, R.raw.background);
+        gl.glPopMatrix();
 
         // Load hud and its texture
-        hud = new HUD();
-        //hud.loadTexture(gl, context);
+        gl.glPushMatrix();
+        hud = new HUD(gl, context);
+        gl.glPopMatrix();
 
         // Set scene light
         light = new Light(gl, GL10.GL_LIGHT0);
@@ -77,7 +79,7 @@ public class GameRenderer implements Renderer {
 
         // Draw background
         gl.glPushMatrix();
-        gl.glScalef(28,25,0);
+        gl.glScalef(82,25,0);
         gl.glRotatef(180,0,1,0);
         gl.glTranslatef(0,0.375f,50);
         background.draw(gl);
@@ -103,8 +105,8 @@ public class GameRenderer implements Renderer {
         setOrthographicProjection(gl); // HUD will always be in same perspective
 
         gl.glPushMatrix();
-        gl.glTranslatef(-3.8f,-3.5f,0);
-        gl.glScalef(0.5f,0.15f,0.0f);
+        gl.glTranslatef(-3.65f,-3.5f,0);
+        gl.glScalef(1.2f,0.6f,0.0f);
         hud.draw(gl);
         gl.glPopMatrix();
     }
