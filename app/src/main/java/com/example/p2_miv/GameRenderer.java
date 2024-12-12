@@ -4,10 +4,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -20,7 +16,8 @@ public class GameRenderer implements Renderer {
     private Scene scene;
     private Light light;
     private Starship starship;
-    private HUD hud;
+    private HPhud hudHP;
+    private BoostHud hudBoost;
     private float starshipX = 0.0f;
     private float starshipY = 0.3f;
 
@@ -49,7 +46,8 @@ public class GameRenderer implements Renderer {
 
         // Load hud and its texture
         gl.glPushMatrix();
-        hud = new HUD(gl, context);
+        hudHP = new HPhud(gl, context);
+        //hudBoost = new BoostHud(gl, context);
         gl.glPopMatrix();
 
         // Set scene light
@@ -104,11 +102,21 @@ public class GameRenderer implements Renderer {
         // HUD ----------------
         setOrthographicProjection(gl); // HUD will always be in same perspective
 
+        // HP Bar
         gl.glPushMatrix();
-        gl.glTranslatef(-3.65f,-3.5f,0);
-        gl.glScalef(1.2f,0.6f,0.0f);
-        hud.draw(gl);
+        gl.glTranslatef(-3.9f,-3.5f,0);
+        gl.glScalef(1.0f,0.4f,0.0f);
+        hudHP.draw(gl);
         gl.glPopMatrix();
+
+        // HP Bar
+        /*
+        gl.glPushMatrix();
+        gl.glTranslatef(0.0f,0.0f,0);
+        gl.glScalef(0.5f,0.5f,0.0f);
+        hudBoost.draw(gl);
+        gl.glPopMatrix();*/
+
     }
 
     public void handleMovement(char input){

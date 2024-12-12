@@ -1,19 +1,15 @@
 package com.example.p2_miv;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-public class HUD {
+
+public class BoostHud {
     private float vertices[] = {
             -0.5f, -0.5f, 0.0f,
             -0.5f,  0.5f, 0.0f,
@@ -21,16 +17,14 @@ public class HUD {
             0.5f, -0.5f, 0.0f};
     private short faces[] = { 0, 1, 2, 0, 2, 3 };
 
-    int[] textureIDs = new int[2];
     // Our vertex buffer.
     private FloatBuffer vertexBuffer;
-    private FloatBuffer textureBuffer;
 
     // Our index buffer.
     private ShortBuffer indexBuffer;
-    private Background healthBar;
+    private Background boostBar;
 
-    public HUD(GL10 gl, Context context) {
+    public BoostHud(GL10 gl, Context context) {
         //Move the vertices list into a buffer
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
         vbb.order(ByteOrder.nativeOrder());
@@ -45,11 +39,13 @@ public class HUD {
         indexBuffer.put(faces);
         indexBuffer.position(0);
 
-        healthBar = new Background();
-        healthBar.loadTexture(gl, context, R.raw.healthbar);
+        boostBar = new Background();
+        boostBar.loadTexture(gl, context, R.raw.boostbar);
     }
     public void draw(GL10 gl) {
-        healthBar.draw(gl);
+        boostBar.draw(gl);
     }
 
 }
+
+

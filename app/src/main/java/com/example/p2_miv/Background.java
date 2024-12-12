@@ -14,7 +14,7 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 public class Background {
-    int[] textureIDs = new int[2];
+    int[] textureIDs = new int[3];
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
     private int texIndex = 0;
@@ -35,6 +35,13 @@ public class Background {
             1.0f, 0.0f
     };
 
+    private float[] textureBoostCoords = {
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.857f,
+            1.0f, 0.857f
+    };
+
     public Background(){
         // Setup vertex-array buffer. Vertices in float. An float has 4 bytes
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -47,7 +54,14 @@ public class Background {
         ByteBuffer tbb = ByteBuffer.allocateDirect(textureCoords.length * 4);
         tbb.order(ByteOrder.nativeOrder());
         textureBuffer = tbb.asFloatBuffer();
-        textureBuffer.put(textureCoords);
+        if(texIndex == 2){
+            textureBuffer.clear();
+            textureBuffer.put(textureBoostCoords);
+        }
+        else {
+            textureBuffer.clear();
+            textureBuffer.put(textureCoords);
+        }
 
         textureBuffer.position(0);
     }
