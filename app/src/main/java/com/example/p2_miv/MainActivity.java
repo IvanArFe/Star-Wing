@@ -11,6 +11,9 @@ public class MainActivity extends Activity {
     private GameRenderer myGameRenderer;
     private boolean leftMove = false;
     private boolean rightMove = false;
+    private boolean upMove = false;
+    private boolean downMove = false;
+    private GLSurfaceView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -21,13 +24,25 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // Create OpenGL view and set renderer
-        GLSurfaceView view = new GLSurfaceView(this);
+        view = new GLSurfaceView(this);
         view.setRenderer(myGameRenderer = new GameRenderer(this));
         setContentView(view);
 
         // Allow keyboard interaction
         view.setFocusableInTouchMode(true);
         view.requestFocus();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        view.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        view.onResume();
     }
 
     @Override
@@ -39,6 +54,12 @@ public class MainActivity extends Activity {
         } else if(keyCode == KeyEvent.KEYCODE_D){
             rightMove = true;
             return true;
+        } else if(keyCode == KeyEvent.KEYCODE_W){
+            upMove = true;
+            return true;
+        } else if(keyCode == KeyEvent.KEYCODE_S){
+            downMove = true;
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -49,26 +70,20 @@ public class MainActivity extends Activity {
         if(keyCode == KeyEvent.KEYCODE_A){
             leftMove = false;
             return true;
-        } else if (keyCode == KeyEvent.KEYCODE_D){
+        } else if(keyCode == KeyEvent.KEYCODE_D){
             rightMove = false;
+            return true;
+        } else if(keyCode == KeyEvent.KEYCODE_W){
+            upMove = false;
+            return true;
+        } else if(keyCode == KeyEvent.KEYCODE_S){
+            downMove = false;
             return true;
         }
         return super.onKeyUp(keyCode, event);
     }
 
-    /*
-    @Override
-    protected void onPause() {
-        super.onPause();
-        glSurfaceView.onPause();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        glSurfaceView.onResume();
-    }
-    */
     public boolean isLeftMove() {
         return leftMove;
     }
@@ -77,4 +92,7 @@ public class MainActivity extends Activity {
         return rightMove;
     }
 
+    public boolean isUpMove() { return upMove; }
+
+    public boolean isDownMove() { return downMove; }
 }

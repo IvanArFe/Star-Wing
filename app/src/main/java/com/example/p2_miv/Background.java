@@ -58,7 +58,6 @@ public class Background {
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 
-        // Construct an input stream to texture image "res\drawable\nehe.png"
         InputStream istream = context.getResources().openRawResource(R.raw.background);
 
         Bitmap bitmap;
@@ -79,12 +78,6 @@ public class Background {
     public void draw(GL10 gl) {
         gl.glColor4f(1,1,1,1);
 
-        // Configurar la proyección ortográfica
-        //gl.glMatrixMode(GL10.GL_PROJECTION);
-        //gl.glLoadIdentity();
-
-        //gl.glMatrixMode(GL10.GL_MODELVIEW);
-        //gl.glLoadIdentity();
         gl.glFrontFace(GL10.GL_CCW);
         gl.glEnable(GL10.GL_CULL_FACE);
         gl.glCullFace(GL10.GL_BACK);
