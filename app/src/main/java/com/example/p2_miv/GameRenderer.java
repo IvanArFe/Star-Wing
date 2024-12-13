@@ -17,9 +17,14 @@ public class GameRenderer implements Renderer {
     private Light light;
     private Starship starship;
     private HPhud hudHP;
-    private BoostHud hudBoost;
     private float starshipX = 0.0f;
     private float starshipY = 0.3f;
+    private float inclX = 0.0f;
+    private float inclZ = 0.0f;
+    private float cameraInclZ = 0.0f;
+    private float cameraPosX = 0.0f;
+    private float maxCameraShiftX = 2.0f;
+    private float cameraShiftSpeed = 0.1f;
 
     public GameRenderer(Context context){
         this.context = context;
@@ -47,7 +52,6 @@ public class GameRenderer implements Renderer {
         // Load hud and its texture
         gl.glPushMatrix();
         hudHP = new HPhud(gl, context);
-        //hudBoost = new BoostHud(gl, context);
         gl.glPopMatrix();
 
         // Set scene light
@@ -73,11 +77,11 @@ public class GameRenderer implements Renderer {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         light.setPosition(new float[]{0, -8, -10, 0});
-        GLU.gluLookAt(gl, 0, 2.5f, -20.0f, 0f, 2.5f, 0f, 0f, 1f, 0f);
+        GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f, 0f, 1f, 0f);
 
         // Draw background
         gl.glPushMatrix();
-        gl.glScalef(82,25,0);
+        gl.glScalef(95f,27.5f,0);
         gl.glRotatef(180,0,1,0);
         gl.glTranslatef(0,0.375f,50);
         background.draw(gl);
@@ -93,9 +97,13 @@ public class GameRenderer implements Renderer {
 
         // Draw starship
         gl.glPushMatrix();
-        gl.glScalef(2.5f, 2.5f, 2.5f);
         gl.glRotatef(180, 0, 1, 0);
+        gl.glScalef(2.5f, 2.5f, 2.5f);
         gl.glTranslatef(starshipX, starshipY, 5f);
+
+        gl.glRotatef(inclZ,0,0,1);
+        gl.glRotatef(inclX,1,0,0);
+
         starship.draw(gl);
         gl.glPopMatrix();
 
@@ -109,14 +117,6 @@ public class GameRenderer implements Renderer {
         hudHP.draw(gl);
         gl.glPopMatrix();
 
-        // HP Bar
-        /*
-        gl.glPushMatrix();
-        gl.glTranslatef(0.0f,0.0f,0);
-        gl.glScalef(0.5f,0.5f,0.0f);
-        hudBoost.draw(gl);
-        gl.glPopMatrix();*/
-
     }
 
     public void handleMovement(char input){
@@ -125,12 +125,17 @@ public class GameRenderer implements Renderer {
         float maxBottom = -0.8f;
         float maxTop = 2.0f;
 
+        // Set rotations to 0 at the beginning
+        inclZ = 0.0f;
+        inclX = 0.0f;
+
         switch(input){
             case 'A':
                 starshipX -= move;
                 if(starshipX < -maxHorizontal){
                     starshipX = -maxHorizontal;
                 }
+                inclZ = 15.0f;
                 break;
 
             case 'D':
@@ -138,6 +143,7 @@ public class GameRenderer implements Renderer {
                 if(starshipX > maxHorizontal){
                     starshipX = maxHorizontal;
                 }
+                inclZ = -15.0f;
                 break;
 
             case 'W':
@@ -145,6 +151,7 @@ public class GameRenderer implements Renderer {
                 if(starshipY > maxTop){
                     starshipY = maxTop;
                 }
+                inclX = -15.0f;
                 break;
 
             case 'S':
@@ -152,20 +159,54 @@ public class GameRenderer implements Renderer {
                 if(starshipY < maxBottom){
                     starshipY = 0.3f;
                 }
+                inclX = 22.0f;
+                break;
+
+            default:
                 break;
         }
     }
 
     private void updateMovement(){
+        boolean isMoving = false;
+        float resetSpeed = 1.35f;
+        float camTilt = 0.5f;
+
         // Continuous movement
         if(mainActivity.isLeftMove()){
             handleMovement('A');
+            cameraInclZ -= camTilt;
+            cameraPosX = Math.max(-maxCameraShiftX, cameraPosX - cameraShiftSpeed);
+            isMoving = true;
         } else if(mainActivity.isRightMove()){
             handleMovement('D');
+            cameraInclZ += camTilt;
+            cameraPosX = Math.min(maxCameraShiftX, cameraPosX + cameraShiftSpeed);
+            isMoving = true;
         } else if(mainActivity.isUpMove()){
             handleMovement('W');
+            isMoving = true;
         } else if(mainActivity.isDownMove()){
             handleMovement('S');
+            isMoving = true;
+        }
+
+        if(!isMoving){
+            // Reduce tilt angle gradually
+            if(inclX > 0.0f){
+                inclX = Math.max(0.0f, inclX - resetSpeed);
+            } else if(inclX < 0.0){
+                inclX = Math.min(0.0f, inclX + resetSpeed);
+            }
+
+            if(inclZ > 0.0f){
+                inclZ = Math.max(0.0f, inclZ - resetSpeed);
+            } else if(inclZ < 0.0f){
+                inclZ = Math.min(0.0f, inclZ + resetSpeed);
+            }
+            cameraInclZ = Math.max(0.0f, cameraInclZ - resetSpeed);
+            cameraPosX = Math.abs(cameraPosX) > 0.05f
+                    ? cameraPosX -Math.signum(cameraPosX) * resetSpeed * 0.05f : 0.0f;
         }
     }
 
