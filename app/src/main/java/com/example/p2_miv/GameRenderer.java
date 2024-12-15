@@ -41,11 +41,12 @@ public class GameRenderer implements Renderer {
         this.starship = new Starship(context, R.raw.starwing);
         this.boat = new GameObject3D(context, R.raw.boat);
         this.mainActivity = (MainActivity) context;
-        this.animator = new Animator();
         this.random = new Random();
         this.loadedObjects = new ArrayList<>();
 
+        // Pre load objects
         preLoadObjects();
+        this.animator = new Animator(random, loadedObjects);
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -141,17 +142,11 @@ public class GameRenderer implements Renderer {
 
         // Update positions
         animator.updateObject();
+        animator.regenerateObject();
         // Draw animated objects
         animator.drawAnimated(gl);
 
-        long currentTime = System.currentTimeMillis();
-        if(currentTime - lastSpawnTime > spawnInterval){
-            spawnObject();
-            lastSpawnTime = currentTime;
-            spawnInterval = 1000 + random.nextInt(2000);
-        }
-
-        // HUD ----------------
+        // -----------  HUD  ----------------
         setOrthographicProjection(gl); // HUD will always be in same perspective
 
         // HP Bar
@@ -295,19 +290,6 @@ public class GameRenderer implements Renderer {
 
             loadedObjects.add(obj);
         }
-    }
-    private void spawnObject(){
-        int idx = random.nextInt(loadedObjects.size());
-        GameObject3D baseObj = loadedObjects.get(idx);
-
-        //float startX = random.nextFloat() * 10 - 5;
-        float startX = -8.0f;
-        //float startY = random.nextFloat() * 5;
-        float startY = 0.0f;
-        float startZ = 2.5f;
-        float speed = -0.1f;
-
-        animator.addObject(baseObj, speed, startX, startY, startZ);
     }
 
 }

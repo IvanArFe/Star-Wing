@@ -34,7 +34,6 @@ public class Point {
     }
 
     public boolean isOffScreen(){
-        Log.d("Point", "Punto eliminado Z: " + z);
         return (this.getZ() >= 15.0f);  // Delete point after reaching cam
     }
 

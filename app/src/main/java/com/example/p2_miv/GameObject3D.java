@@ -154,6 +154,24 @@ public class GameObject3D {
         }
     }
 
+    // Clone constructor
+    public GameObject3D(GameObject3D other){
+        this.vertexBuffer = other.vertexBuffer;
+        this.normalBuffer = other.normalBuffer;
+        this.indexBuffer = other.indexBuffer;
+        this.texcoordBuffer = other.texcoordBuffer;
+        this.textures = other.textures.clone();
+        this.numFaceIndexs = other.numFaceIndexs;
+
+        this.rotX = other.rotX;
+        this.rotY = other.rotY;
+        this.rotZ = other.rotZ;
+        this.scaleX = other.scaleX;
+        this.scaleY = other.scaleY;
+        this.scaleZ = other.scaleZ;
+        this.angle = other.angle;
+    }
+
     public void draw(GL10 gl){
         // Enabled the vertices buffer for writing and to be used during
         // rendering.
