@@ -39,8 +39,8 @@ public class BoostHud {
         indexBuffer.put(faces);
         indexBuffer.position(0);
 
-        boostBar = new Background();
-        boostBar.loadTexture(gl, context, R.raw.boostbar);
+        /*boostBar = new Background();
+        boostBar.loadTexture(gl, context, R.raw.boostbar);*/
     }
     public void draw(GL10 gl) {
         boostBar.draw(gl);

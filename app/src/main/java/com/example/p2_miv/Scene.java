@@ -34,13 +34,10 @@ public class Scene {
     }
 
     public void updateScene(){
-        //Log.d("Scene", "Points count: "+points.size());
         // Update points position
         for(Point p : points){
             p.updatePos();
-            //Log.d("Scene", "Updated point: X=" + p.getX() + ", Y=" + p.getY() + ", Z=" + p.getZ());
             if(p.isOffScreen()){
-                Log.d("Scene", "Deleted point: Z = " + p.getZ());
                 p.setZ(HORIZON_Z); // Delete point when reaching cam
             }
         }

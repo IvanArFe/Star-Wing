@@ -4,6 +4,9 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -16,6 +19,8 @@ public class GameRenderer implements Renderer {
     private Scene scene;
     private Light light;
     private Starship starship;
+    private GameObject3D boat;
+    private ArrayList<GameObject3D> loadedObjects;
     private HPhud hudHP;
     private float starshipX = 0.0f;
     private float starshipY = 0.3f;
@@ -25,12 +30,22 @@ public class GameRenderer implements Renderer {
     private float cameraPosX = 0.0f;
     private float maxCameraShiftX = 2.0f;
     private float cameraShiftSpeed = 0.1f;
+    private Random random;
+    private Animator animator;
+    private long lastSpawnTime = 0;
+    private int spawnInterval = 6000;
 
     public GameRenderer(Context context){
         this.context = context;
         this.scene = new Scene();
         this.starship = new Starship(context, R.raw.starwing);
+        this.boat = new GameObject3D(context, R.raw.boat);
         this.mainActivity = (MainActivity) context;
+        this.animator = new Animator();
+        this.random = new Random();
+        this.loadedObjects = new ArrayList<>();
+
+        preLoadObjects();
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -53,6 +68,7 @@ public class GameRenderer implements Renderer {
         gl.glPushMatrix();
         hudHP = new HPhud(gl, context);
         gl.glPopMatrix();
+        //boat.loadTexture(gl, context, R.raw.woodtexture);
 
         // Set scene light
         light = new Light(gl, GL10.GL_LIGHT0);
@@ -60,6 +76,11 @@ public class GameRenderer implements Renderer {
 
         light.setAmbientColor(new float[]{0.8f, 0.8f, 0.8f});
         light.setDifusseColor(new float[]{1, 1, 1});
+
+        int[] textureIds = {R.raw.woodtexture};
+        for(int i = 0; i < loadedObjects.size(); i++){
+            loadedObjects.get(i).loadTexture(gl, context, textureIds[i]);
+        }
 
     }
     @Override
@@ -77,7 +98,9 @@ public class GameRenderer implements Renderer {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         light.setPosition(new float[]{0, -8, -10, 0});
-        GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f, 0f, 1f, 0f);
+        //GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f, 0f, 1f, 0f);
+        GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f,
+                (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);
 
         // Draw background
         gl.glPushMatrix();
@@ -107,6 +130,27 @@ public class GameRenderer implements Renderer {
         starship.draw(gl);
         gl.glPopMatrix();
 
+        // Draw 3D Objects
+        /*
+        gl.glPushMatrix();
+        gl.glRotatef(-90,0, 1, 0);
+        gl.glScalef(1.5f,1.5f,1.5f);
+        gl.glTranslatef(-8.0f, 0.0f, 0.0f);
+        boat.draw(gl);
+        gl.glPopMatrix();*/
+
+        // Update positions
+        animator.updateObject();
+        // Draw animated objects
+        animator.drawAnimated(gl);
+
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - lastSpawnTime > spawnInterval){
+            spawnObject();
+            lastSpawnTime = currentTime;
+            spawnInterval = 1000 + random.nextInt(2000);
+        }
+
         // HUD ----------------
         setOrthographicProjection(gl); // HUD will always be in same perspective
 
@@ -116,7 +160,6 @@ public class GameRenderer implements Renderer {
         gl.glScalef(1.0f,0.4f,0.0f);
         hudHP.draw(gl);
         gl.glPopMatrix();
-
     }
 
     public void handleMovement(char input){
@@ -171,16 +214,17 @@ public class GameRenderer implements Renderer {
         boolean isMoving = false;
         float resetSpeed = 1.35f;
         float camTilt = 0.5f;
+        float maxCamIncl = 2.f;
 
         // Continuous movement
         if(mainActivity.isLeftMove()){
             handleMovement('A');
-            cameraInclZ -= camTilt;
+            cameraInclZ = Math.min(cameraInclZ + camTilt, maxCamIncl);
             cameraPosX = Math.max(-maxCameraShiftX, cameraPosX - cameraShiftSpeed);
             isMoving = true;
         } else if(mainActivity.isRightMove()){
             handleMovement('D');
-            cameraInclZ += camTilt;
+            cameraInclZ = Math.max(cameraInclZ - camTilt, -maxCamIncl);
             cameraPosX = Math.min(maxCameraShiftX, cameraPosX + cameraShiftSpeed);
             isMoving = true;
         } else if(mainActivity.isUpMove()){
@@ -236,6 +280,34 @@ public class GameRenderer implements Renderer {
 
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
+    }
+    private void preLoadObjects() {
+        // Pre-load of models to be more efficient
+        int[] objectIDs = {R.raw.boat};
+
+        for(int i = 0; i < objectIDs.length; i++){
+            GameObject3D obj = new GameObject3D(context, objectIDs[i]);
+
+            if(i == 0){
+                obj.setRotation(-90, 0,1,0);
+                obj.setScale(1.5f,1.5f,1.5f);
+            }
+
+            loadedObjects.add(obj);
+        }
+    }
+    private void spawnObject(){
+        int idx = random.nextInt(loadedObjects.size());
+        GameObject3D baseObj = loadedObjects.get(idx);
+
+        //float startX = random.nextFloat() * 10 - 5;
+        float startX = -8.0f;
+        //float startY = random.nextFloat() * 5;
+        float startY = 0.0f;
+        float startZ = 2.5f;
+        float speed = -0.1f;
+
+        animator.addObject(baseObj, speed, startX, startY, startZ);
     }
 
 }
