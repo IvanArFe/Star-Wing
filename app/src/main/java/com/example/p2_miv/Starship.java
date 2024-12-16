@@ -40,8 +40,9 @@ public class Starship {
     int[] textures = new int[1];
     int numFaceIndexs = 0;
 
+    // Starship constructor
     public Starship(Context ctx, int filenameId){
-
+        // Method to read all needed information from .obj file
         try{
             String line;
             String[] tmp,ftmp;
@@ -146,6 +147,7 @@ public class Starship {
         }
     }
 
+    // Method to draw the Starship in scene
     public void draw(GL10 gl){
         // Enabled the vertices buffer for writing and to be used during
         // rendering.
@@ -153,17 +155,13 @@ public class Starship {
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
         if(textureEnabled) gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
-        //////////////////////// NEW ////////////////////////////////
         gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-        //////////////////////// NEW ////////////////////////////////
 
         // Specifies the location and data format of an array of vertex
         // coordinates to use when rendering.
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
 
-        //////////////////////// NEW ////////////////////////////////
         gl.glNormalPointer(GL10.GL_FLOAT, 0, normalBuffer);
-        //////////////////////// NEW ////////////////////////////////
 
         if(textureEnabled) {
             gl.glTexCoordPointer(2, GL10.GL_FLOAT,0,texcoordBuffer);
@@ -176,10 +174,10 @@ public class Starship {
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         if(textureEnabled) gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
-        //////////////////////// NEW ////////////////////////////////
         gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
-        //////////////////////// NEW ////////////////////////////////
     }
+
+    // Method to load a texture into Starship object
     public void loadTexture(GL10 gl, Context context, int filename){
         gl.glGenTextures(1, textures, 0); // Generate texture-ID array
 

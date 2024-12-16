@@ -11,6 +11,8 @@ public class Animator {
     private ArrayList<GameObject3D> loadedObjects;
     private Random random;
     private float globalSpeed;
+
+    // Constructor with required parameters
     public Animator(Random random, ArrayList<GameObject3D> loadedObj, float initialSpeed){
         this.animatedObjects = new ArrayList<>();
         this.random = random;
@@ -24,6 +26,7 @@ public class Animator {
         float posX, posY, posZ;
         float startY, startZ;
 
+        // Constructor
         AnimatedObject(GameObject3D gameObject, float posX, float startY, float startZ){
             this.obj = gameObject;
             this.posX = posX;
@@ -33,6 +36,7 @@ public class Animator {
             this.startZ = startZ;
         }
 
+        // Getters and Setters
         public GameObject3D getObj() { return obj; }
 
         public float getPosX() { return posX; }
@@ -43,12 +47,14 @@ public class Animator {
 
     }
 
+    // Method to add a 3D Object to the animated objects list in order to manage them.
     public void addObject(GameObject3D gameObject, float startX, float startY, float startZ){
         if(!existObject(gameObject)){
             animatedObjects.add(new AnimatedObject(gameObject, startX, startY, startZ));
         }
     }
 
+    // Method to check if an Object is already in animated objects list
     private boolean existObject(GameObject3D gameObject) {
         for(AnimatedObject animObj : animatedObjects){
             if(animObj.getObj() == gameObject){
@@ -58,6 +64,7 @@ public class Animator {
         return false;
     }
 
+    // Method to update objects' movement in order to come closer to the camera
     public void updateObject(){
         Iterator<AnimatedObject> it = animatedObjects.iterator();
 
@@ -73,6 +80,7 @@ public class Animator {
         }
     }
 
+    // Method to draw the object again once it has crossed the camera
     public void regenerateObject() {
 
         if(!loadedObjects.isEmpty()){
@@ -86,10 +94,12 @@ public class Animator {
         }
     }
 
+    // Method to check if the object has crossed the camera
     private boolean isOffScreen(float z){
         return (z < -25);
     }
 
+    // Method to draw objects in animatedObjects list
     public void drawAnimated(GL10 gl){
         for(AnimatedObject animatedObj : animatedObjects){
             gl.glPushMatrix();

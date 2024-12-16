@@ -19,8 +19,6 @@ public class GameRenderer implements Renderer {
     private Scene scene;
     private Light light;
     private Starship starship;
-    private GameObject3D lighthouse;
-    private GameObject3D seaShell;
     private ArrayList<GameObject3D> loadedObjects;
     private HPhud hudHP;
     private float starshipX = 0.0f;
@@ -35,10 +33,10 @@ public class GameRenderer implements Renderer {
     private float cameraShiftSpeed = 0.1f;
     private Random random;
     private Animator animator;
-    private long lastSpawnTime = 0;
-    private int spawnInterval = 6000;
 
+    // GameRenderer constructor
     public GameRenderer(Context context){
+        // Instantiate all needed variables
         this.context = context;
         this.scene = new Scene();
         this.starship = new Starship(context, R.raw.armwing2);
@@ -48,6 +46,7 @@ public class GameRenderer implements Renderer {
 
         // Pre load objects
         preLoadObjects();
+        // Set new animator with loaded objects
         this.animator = new Animator(random, loadedObjects, -0.1f);
 
     }
@@ -90,6 +89,8 @@ public class GameRenderer implements Renderer {
         }
 
     }
+
+    // Method to handle viewport when changed surface
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         if(height == 0){ height = 1; }
@@ -98,6 +99,8 @@ public class GameRenderer implements Renderer {
 
         gl.glViewport(0, 0, width, height);
     }
+
+    // Method to represent all we need in scene every frame
     @Override
     public void onDrawFrame(GL10 gl) {
         setPerspectiveProjection(gl);
@@ -106,6 +109,7 @@ public class GameRenderer implements Renderer {
         gl.glLoadIdentity();
         light.setPosition(new float[]{0, -8, -10, 0});
 
+        // Set camera position
         GLU.gluLookAt(gl, cameraPosX, eyeCameraY, -20.0f, 0f, centerCameraY, 0f,
                 (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);
 
@@ -123,6 +127,7 @@ public class GameRenderer implements Renderer {
         scene.draw(gl); // Draw points
         gl.glPopMatrix();
 
+        // Handle starship movement
         updateMovement();
 
         // Draw starship
@@ -157,6 +162,7 @@ public class GameRenderer implements Renderer {
         gl.glPopMatrix();
     }
 
+    // Method to handle starship movement modifying specific variables
     public void handleMovement(char input){
         float move = 0.05f;
         float maxHorizontal = 2.8f;
@@ -214,6 +220,7 @@ public class GameRenderer implements Renderer {
         }
     }
 
+    // method to modify camera angles and starship movement calling handleMovement
     private void updateMovement(){
         boolean isMoving = false;
         float resetSpeed = 1.35f;
@@ -264,6 +271,7 @@ public class GameRenderer implements Renderer {
         }
     }
 
+    // Method to set perspective projection
     private void setPerspectiveProjection(GL10 gl) {
         gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
         gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
@@ -282,6 +290,8 @@ public class GameRenderer implements Renderer {
         gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix
         gl.glLoadIdentity();                 // Reset
     }
+
+    // Method to set orthographic projection
     private void setOrthographicProjection(GL10 gl){
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
@@ -291,6 +301,8 @@ public class GameRenderer implements Renderer {
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
     }
+
+    // Method to load objects only once to avoid loading every time when frames change
     private void preLoadObjects() {
         // Pre-load of models to be more efficient
         int[] objectIDs = {R.raw.boat, R.raw.lighthouse, R.raw.lifepreserver};

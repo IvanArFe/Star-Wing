@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
     public boolean restartCam = false;
     private GLSurfaceView view;
 
+    // Method to set all necessary configurations in order to manage the simulation
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -35,7 +36,7 @@ public class MainActivity extends Activity {
         view.setFocusableInTouchMode(true);
         view.requestFocus();
 
-        // Enable immservide mode in order to only see the game
+        // Enable immersive mode in order to only see the game
         immersiveMode();
     }
 
@@ -51,6 +52,7 @@ public class MainActivity extends Activity {
         view.onResume();
     }
 
+    // Immersive mode configurations
     public void immersiveMode(){
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE
@@ -62,6 +64,7 @@ public class MainActivity extends Activity {
         );
     }
 
+    // Method to figure out if a key has been pressed
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Capture keys
@@ -87,6 +90,7 @@ public class MainActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
+    // Method to check if a key has been released
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         // Free previus captured key
@@ -106,6 +110,7 @@ public class MainActivity extends Activity {
         return super.onKeyUp(keyCode, event);
     }
 
+    // Methods to know if movement is being done or camera needs to be changed
     public boolean isLeftMove() {
         return leftMove;
     }

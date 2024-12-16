@@ -42,6 +42,7 @@ public class Background {
             1.0f, 0.857f
     };
 
+    // Default constructor
     public Background(){
         // Setup vertex-array buffer. Vertices in float. An float has 4 bytes
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -66,6 +67,7 @@ public class Background {
         textureBuffer.position(0);
     }
 
+    // Method to load a texture into an object
     public void loadTexture(GL10 gl, Context context, int filename){
         gl.glGenTextures(1, textureIDs, texIndex); // Generate texture-ID array
         texID = texIndex;
@@ -85,6 +87,7 @@ public class Background {
         texIndex++;
     }
 
+    // Method to draw the background or instances of it
     public void draw(GL10 gl) {
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);

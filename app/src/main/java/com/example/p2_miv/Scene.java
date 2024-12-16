@@ -13,10 +13,12 @@ public class Scene {
     private static final float ROW_SPACING = 1.0f; // Espaciado vertical
     private static final float HORIZON_Z = 5.0f; // Coordenada Z del horizonte
 
+    // Scene constructor
     public Scene(){
         generateColumns();
     }
 
+    // Method to generate all points in scene in order to simulate starship progress
     private void generateColumns() {
         float x = 15.0f; // Coordenada fija X
         float y = -0.45f; // Coordenada fija Y
@@ -33,6 +35,7 @@ public class Scene {
         }
     }
 
+    // Method to update points cords to simulate forward movement
     public void updateScene(){
         // Update points position
         for(Point p : points){
@@ -43,6 +46,7 @@ public class Scene {
         }
     }
 
+    // Method to draw all points in scene
     public void draw(GL10 gl){
         for(Point p : points){
             p.draw(gl);

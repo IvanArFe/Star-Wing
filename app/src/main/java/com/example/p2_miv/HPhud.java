@@ -23,6 +23,7 @@ public class HPhud {
     private ShortBuffer indexBuffer;
     private Background healthBar;
 
+    // HP bar constructor
     public HPhud(GL10 gl, Context context) {
         //Move the vertices list into a buffer
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -41,6 +42,8 @@ public class HPhud {
         healthBar = new Background();
         healthBar.loadTexture(gl, context, R.raw.healthbar);
     }
+
+    // Method to draw HP bar
     public void draw(GL10 gl) {
         healthBar.draw(gl);
     }

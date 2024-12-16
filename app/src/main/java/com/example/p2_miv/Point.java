@@ -15,6 +15,7 @@ public class Point {
             0.0f, 0.0f, 0.0f,   // Bottom left coord
     };
 
+    // Constructor of a point in scene
     public Point(float x, float y, float z, float speed){
         this.x = x; // Horizontal coord
         this.y = y; // Vertical coord
@@ -29,14 +30,13 @@ public class Point {
         vertexBuffer.position(0);
     }
 
-    public void updatePos(){
-        z += speed; // Go forward to cam
-    }
+    // Go forward to cam
+    public void updatePos(){ z += speed; }
 
-    public boolean isOffScreen(){
-        return (this.getZ() >= 15.0f);  // Delete point after reaching cam
-    }
+    // Delete point after reaching cam
+    public boolean isOffScreen(){ return (this.getZ() >= 15.0f); }
 
+    // Method to draw a point in scene
     public void draw(GL10 gl){
         gl.glPushMatrix();
 
@@ -55,22 +55,7 @@ public class Point {
         gl.glPopMatrix();
     }
 
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
+    // Needed Getters and Setters
     public float getZ() {
         return z;
     }
@@ -79,11 +64,4 @@ public class Point {
         this.z = z;
     }
 
-    public float getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
 }

@@ -14,6 +14,7 @@ public class Light {
     private int lightID;
     private FloatBuffer fb_pos;
 
+    // Light constructor
     public Light(GL10 gl, int lightID){
         this.gl = gl;
         this.lightID = lightID;
