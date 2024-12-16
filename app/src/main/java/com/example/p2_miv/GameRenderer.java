@@ -48,7 +48,8 @@ public class GameRenderer implements Renderer {
 
         // Pre load objects
         preLoadObjects();
-        this.animator = new Animator(random, loadedObjects);
+        this.animator = new Animator(random, loadedObjects, -0.1f);
+
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -81,7 +82,7 @@ public class GameRenderer implements Renderer {
         light.setAmbientColor(new float[]{0.8f, 0.8f, 0.8f});
         light.setDifusseColor(new float[]{1, 1, 1});
 
-        int[] textureIds = {R.raw.woodtexture};
+        int[] textureIds = {R.raw.woodtexture, R.raw.colors, R.raw.colors};
         for(int i = 0; i < loadedObjects.size(); i++){
             if(loadedObjects.get(i).textureEnabled){
                 loadedObjects.get(i).loadTexture(gl, context, textureIds[i]);
@@ -292,7 +293,7 @@ public class GameRenderer implements Renderer {
     }
     private void preLoadObjects() {
         // Pre-load of models to be more efficient
-        int[] objectIDs = {R.raw.boat};
+        int[] objectIDs = {R.raw.boat, R.raw.lighthouse, R.raw.lifepreserver};
 
         for(int i = 0; i < objectIDs.length; i++){
             GameObject3D obj = new GameObject3D(context, objectIDs[i]);
@@ -300,7 +301,15 @@ public class GameRenderer implements Renderer {
             if(i == 0){
                 obj.setRotation(-90, 0,1,0);
                 obj.setScale(1.5f,1.5f,1.5f);
+            } if(i == 1){
+                obj.setRotation(90, 0,1,0);
+                obj.setScale(2.0f, 2.0f, 2.0f);
+            } if(i == 2){
+                obj.setRotation(90, 0,1,0);
+                obj.setScale(0.5f,0.5f,0.5f);
             }
+
+            // Add loaded objects to animator
             loadedObjects.add(obj);
         }
     }

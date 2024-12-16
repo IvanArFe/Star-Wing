@@ -10,30 +10,28 @@ public class Animator {
     private ArrayList<AnimatedObject> animatedObjects;
     private ArrayList<GameObject3D> loadedObjects;
     private Random random;
-    public Animator(Random random, ArrayList<GameObject3D> loadedObj){
+    private float globalSpeed;
+    public Animator(Random random, ArrayList<GameObject3D> loadedObj, float initialSpeed){
         this.animatedObjects = new ArrayList<>();
         this.random = random;
         this.loadedObjects = loadedObj;
+        this.globalSpeed = initialSpeed;
     }
 
     // Auxiliar class to handle updates on objects to avoid modifying original references
     private static class AnimatedObject{
         GameObject3D obj;
-        float speed;
         float posX, posY, posZ;
         float startY, startZ;
 
-        AnimatedObject(GameObject3D gameObject, float speed, float posX, float startY, float startZ){
+        AnimatedObject(GameObject3D gameObject, float posX, float startY, float startZ){
             this.obj = gameObject;
-            this.speed = speed;
             this.posX = posX;
             this.posY = startY;
             this.posZ = startZ;
             this.startY = startY;
             this.startZ = startZ;
         }
-
-        public float getSpeed() { return speed; }
 
         public GameObject3D getObj() { return obj; }
 
@@ -45,9 +43,9 @@ public class Animator {
 
     }
 
-    public void addObject(GameObject3D gameObject, float speed, float startX, float startY, float startZ){
+    public void addObject(GameObject3D gameObject, float startX, float startY, float startZ){
         if(!existObject(gameObject)){
-            animatedObjects.add(new AnimatedObject(gameObject, speed, startX, startY, startZ));
+            animatedObjects.add(new AnimatedObject(gameObject, startX, startY, startZ));
         }
     }
 
@@ -67,7 +65,7 @@ public class Animator {
             AnimatedObject animatedObj = it.next(); // Get every object in list
 
             // Update position
-            animatedObj.posZ += animatedObj.getSpeed();
+            animatedObj.posZ += globalSpeed;
 
             if(isOffScreen(animatedObj.getPosZ())){
                 it.remove();
@@ -80,12 +78,10 @@ public class Animator {
         if(!loadedObjects.isEmpty()){
             GameObject3D newObj = loadedObjects.get(random.nextInt(loadedObjects.size()));
 
-            float newX = random.nextFloat() * 10 - 5;
-            float startY = 0.0f;
-            float startZ = 2.5f;
+            float newX = random.nextFloat() * 15 - 5;
 
             if(!existObject(newObj)){
-                addObject(newObj, -0.1f, newX, startY, startZ);
+                addObject(newObj, newX, 0.0f, 2.5f);
             }
         }
     }
@@ -99,7 +95,7 @@ public class Animator {
             gl.glPushMatrix();
             gl.glTranslatef(animatedObj.getPosX(), animatedObj.getPosY(), animatedObj.getPosZ());
 
-            animatedObj.getObj().draw(gl);
+            animatedObj.getObj().draw(gl, 0);
             gl.glPopMatrix();
         }
     }

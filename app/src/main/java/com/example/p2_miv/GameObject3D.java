@@ -38,8 +38,7 @@ public class GameObject3D {
 
     // Our texture buffer.
     private FloatBuffer texcoordBuffer;
-
-    int[] textures = new int[1];
+    ArrayList<Integer> textures = new ArrayList<>();
     int numFaceIndexs = 0;
     private float rotX = 0.0f;
     private float rotY = 0.0f;
@@ -48,7 +47,6 @@ public class GameObject3D {
     private float scaleY = 1.0f;
     private float scaleZ = 1.0f;
     private float angle;
-    private int texID = 0;
 
     public GameObject3D(Context ctx, int filenameId){
         try{
@@ -156,36 +154,21 @@ public class GameObject3D {
         }
     }
 
-    // Clone constructor
-    /*public GameObject3D(GameObject3D other){
-        this.vertexBuffer = other.vertexBuffer;
-        this.normalBuffer = other.normalBuffer;
-        this.indexBuffer = other.indexBuffer;
-        this.texcoordBuffer = other.texcoordBuffer;
-        this.textures = other.textures.clone();
-        this.numFaceIndexs = other.numFaceIndexs;
+    public GameObject3D(){}
 
-        this.rotX = other.rotX;
-        this.rotY = other.rotY;
-        this.rotZ = other.rotZ;
-        this.scaleX = other.scaleX;
-        this.scaleY = other.scaleY;
-        this.scaleZ = other.scaleZ;
-        this.angle = other.angle;
-    }*/
-
-    public void draw(GL10 gl){
+    public void draw(GL10 gl, int textureIdx){
         // Enabled the vertices buffer for writing and to be used during
         // rendering.
         gl.glPushMatrix();
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         gl.glDisable(GL10.GL_LIGHTING);
-        gl.glColor4f(1,1,1,1);
         gl.glEnable(GL10.GL_COLOR_MATERIAL);
         gl.glEnable(GL10.GL_CULL_FACE);
         gl.glCullFace(GL10.GL_BACK);
         gl.glEnable(GL10.GL_TEXTURE_2D);
+        gl.glColor4f(1,1,1,1);
+
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
         if(textureEnabled) gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
@@ -203,10 +186,11 @@ public class GameObject3D {
 
         if(textureEnabled) {
             gl.glTexCoordPointer(2, GL10.GL_FLOAT,0,texcoordBuffer);
-            gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+            gl.glBindTexture(GL10.GL_TEXTURE_2D, textures.get(textureIdx));
         }
 
         gl.glRotatef(angle, rotX, rotY, rotZ);
+        gl.glScalef(scaleX, scaleY, scaleZ);
         gl.glDrawElements(GL10.GL_TRIANGLES, numFaceIndexs, GL10.GL_UNSIGNED_SHORT, indexBuffer);
 
         // Disable the vertices buffer.
@@ -224,8 +208,9 @@ public class GameObject3D {
     }
 
     public void loadTexture(GL10 gl, Context context, int filename){
-        gl.glGenTextures(1, textures, 0); // Generate texture-ID array
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);   // Bind to texture ID
+        int[] textureID = new int[1];
+        gl.glGenTextures(1, textureID, 0); // Generate texture-ID array
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, textureID[0]);   // Bind to texture ID
 
         // Set up texture filters
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
@@ -238,6 +223,8 @@ public class GameObject3D {
         // Build Texture from loaded bitmap for the currently-bind texture ID
         GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
         bitmap.recycle();
+
+        textures.add(textureID[0]);
     }
 
     public void setRotation(float angle, float angleX, float angleY, float angleZ){
