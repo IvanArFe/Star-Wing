@@ -23,7 +23,7 @@ public class Starship {
     boolean colorEnabled = false;
 
     // Texture enabled or not
-    boolean textureEnabled = true;
+    boolean textureEnabled = false;
 
     // Our vertex buffer.
     private FloatBuffer vertexBuffer;
@@ -150,12 +150,6 @@ public class Starship {
         // Enabled the vertices buffer for writing and to be used during
         // rendering.
         gl.glColor4f(1,1,1,1);
-        //gl.glEnable(GL10.GL_BLEND);
-        //gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        //gl.glDisable(GL10.GL_LIGHTING);
-        gl.glEnable(GL10.GL_CULL_FACE);
-        gl.glCullFace(GL10.GL_BACK);
-        gl.glEnable(GL10.GL_TEXTURE_2D);
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
         if(textureEnabled) gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
@@ -185,10 +179,6 @@ public class Starship {
         //////////////////////// NEW ////////////////////////////////
         gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
         //////////////////////// NEW ////////////////////////////////
-        //gl.glDisable(GL10.GL_BLEND);
-        //gl.glEnable(GL10.GL_LIGHTING);
-        gl.glDisable(GL10.GL_TEXTURE_2D);
-        gl.glDisable(GL10.GL_CULL_FACE);
     }
     public void loadTexture(GL10 gl, Context context, int filename){
         gl.glGenTextures(1, textures, 0); // Generate texture-ID array

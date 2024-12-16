@@ -41,10 +41,7 @@ public class GameRenderer implements Renderer {
     public GameRenderer(Context context){
         this.context = context;
         this.scene = new Scene();
-        this.starship = new Starship(context, R.raw.starwing);
-        this.lighthouse = new GameObject3D(context, R.raw.lighthouse);
-        this.lighthouse.textureEnabled = false;
-        this.seaShell = new GameObject3D(context, R.raw.seashell);
+        this.starship = new Starship(context, R.raw.armwing2);
         this.mainActivity = (MainActivity) context;
         this.random = new Random();
         this.loadedObjects = new ArrayList<>();
@@ -60,7 +57,6 @@ public class GameRenderer implements Renderer {
 
         // Enable lights
         gl.glEnable(GL10.GL_LIGHTING);
-        gl.glShadeModel(GL10.GL_SMOOTH);
 
         // Enable Normalize
         gl.glEnable(GL10.GL_NORMALIZE);
@@ -76,7 +72,7 @@ public class GameRenderer implements Renderer {
         hudHP = new HPhud(gl, context);
         //starship.loadTexture(gl, context, R.raw.colors);
         gl.glPopMatrix();
-        seaShell.loadTexture(gl, context, R.raw.colors);
+
 
         // Set scene light
         light = new Light(gl, GL10.GL_LIGHT0);
@@ -109,8 +105,6 @@ public class GameRenderer implements Renderer {
         gl.glLoadIdentity();
         light.setPosition(new float[]{0, -8, -10, 0});
 
-        /*GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f,
-                (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);*/
         GLU.gluLookAt(gl, cameraPosX, eyeCameraY, -20.0f, 0f, centerCameraY, 0f,
                 (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);
 
@@ -143,21 +137,13 @@ public class GameRenderer implements Renderer {
         gl.glPopMatrix();
 
         // ------ Draw 3D Objects -------
-        /*
         // Update positions
         animator.updateObject();
         // Regenerate objects in scene
         animator.regenerateObject();
         // Draw animated objects
-        animator.drawAnimated(gl);*/
-        gl.glPushMatrix();
-        gl.glScalef(1.5f,1.5f,1.5f);
-        //gl.glRotatef(-90,0,1,0);
-        gl.glTranslatef(-2.0f, 0.0f, 0.0f);
-        //gl.glColor4f(1,0,0,0);
-        //lighthouse.draw(gl);
-        seaShell.draw(gl);
-        gl.glPopMatrix();
+        animator.drawAnimated(gl);
+
 
         // -----------  HUD  ----------------
         setOrthographicProjection(gl); // HUD will always be in same perspective
@@ -315,7 +301,6 @@ public class GameRenderer implements Renderer {
                 obj.setRotation(-90, 0,1,0);
                 obj.setScale(1.5f,1.5f,1.5f);
             }
-
             loadedObjects.add(obj);
         }
     }

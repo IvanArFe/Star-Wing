@@ -43,7 +43,6 @@ public class Animator {
 
         public float getPosZ() { return posZ; }
 
-        public float getStartZ() { return startZ; }
     }
 
     public void addObject(GameObject3D gameObject, float speed, float startX, float startY, float startZ){

@@ -39,7 +39,7 @@ public class GameObject3D {
     // Our texture buffer.
     private FloatBuffer texcoordBuffer;
 
-    int[] textures = new int[2];
+    int[] textures = new int[1];
     int numFaceIndexs = 0;
     private float rotX = 0.0f;
     private float rotY = 0.0f;
@@ -47,7 +47,8 @@ public class GameObject3D {
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
     private float scaleZ = 1.0f;
-    private float angle = 0.0f;
+    private float angle;
+    private int texID = 0;
 
     public GameObject3D(Context ctx, int filenameId){
         try{
@@ -99,7 +100,8 @@ public class GameObject3D {
                     }
                 }
             }
-            ByteBuffer vbb = ByteBuffer.allocateDirect(vindex.size() * 4 * 3);
+
+            ByteBuffer vbb = ByteBuffer.allocateDirect(numFaceIndexs * 4 * 3);
             vbb.order(ByteOrder.nativeOrder());
             vertexBuffer = vbb.asFloatBuffer();
 
@@ -155,7 +157,7 @@ public class GameObject3D {
     }
 
     // Clone constructor
-    public GameObject3D(GameObject3D other){
+    /*public GameObject3D(GameObject3D other){
         this.vertexBuffer = other.vertexBuffer;
         this.normalBuffer = other.normalBuffer;
         this.indexBuffer = other.indexBuffer;
@@ -170,7 +172,7 @@ public class GameObject3D {
         this.scaleY = other.scaleY;
         this.scaleZ = other.scaleZ;
         this.angle = other.angle;
-    }
+    }*/
 
     public void draw(GL10 gl){
         // Enabled the vertices buffer for writing and to be used during
@@ -204,6 +206,7 @@ public class GameObject3D {
             gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
         }
 
+        gl.glRotatef(angle, rotX, rotY, rotZ);
         gl.glDrawElements(GL10.GL_TRIANGLES, numFaceIndexs, GL10.GL_UNSIGNED_SHORT, indexBuffer);
 
         // Disable the vertices buffer.
@@ -257,4 +260,5 @@ public class GameObject3D {
     public float[] getScale(){
         return new float[]{scaleX, scaleY, scaleZ};
     }
+
 }
