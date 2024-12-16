@@ -14,6 +14,8 @@ public class MainActivity extends Activity {
     private boolean rightMove = false;
     private boolean upMove = false;
     private boolean downMove = false;
+    public boolean camUp = false;
+    public boolean restartCam = false;
     private GLSurfaceView view;
 
     @Override
@@ -75,6 +77,12 @@ public class MainActivity extends Activity {
         } else if(keyCode == KeyEvent.KEYCODE_S){
             downMove = true;
             return true;
+        } else if(keyCode == KeyEvent.KEYCODE_P){
+            camUp = true;
+            return true;
+        } else if(keyCode == KeyEvent.KEYCODE_R){
+            restartCam = true;
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -98,7 +106,6 @@ public class MainActivity extends Activity {
         return super.onKeyUp(keyCode, event);
     }
 
-
     public boolean isLeftMove() {
         return leftMove;
     }
@@ -110,4 +117,8 @@ public class MainActivity extends Activity {
     public boolean isUpMove() { return upMove; }
 
     public boolean isDownMove() { return downMove; }
+
+    public boolean isCamUp() { return camUp; }
+
+    public boolean isRestartCam() { return restartCam; }
 }

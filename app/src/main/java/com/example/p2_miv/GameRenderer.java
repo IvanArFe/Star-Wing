@@ -19,13 +19,16 @@ public class GameRenderer implements Renderer {
     private Scene scene;
     private Light light;
     private Starship starship;
-    private GameObject3D boat;
+    private GameObject3D lighthouse;
+    private GameObject3D seaShell;
     private ArrayList<GameObject3D> loadedObjects;
     private HPhud hudHP;
     private float starshipX = 0.0f;
     private float starshipY = 0.3f;
     private float inclX = 0.0f;
     private float inclZ = 0.0f;
+    private float eyeCameraY = 2.5f;
+    private float centerCameraY = 2.5f;
     private float cameraInclZ = 0.0f;
     private float cameraPosX = 0.0f;
     private float maxCameraShiftX = 2.0f;
@@ -39,7 +42,9 @@ public class GameRenderer implements Renderer {
         this.context = context;
         this.scene = new Scene();
         this.starship = new Starship(context, R.raw.starwing);
-        this.boat = new GameObject3D(context, R.raw.boat);
+        this.lighthouse = new GameObject3D(context, R.raw.lighthouse);
+        this.lighthouse.textureEnabled = false;
+        this.seaShell = new GameObject3D(context, R.raw.seashell);
         this.mainActivity = (MainActivity) context;
         this.random = new Random();
         this.loadedObjects = new ArrayList<>();
@@ -55,6 +60,7 @@ public class GameRenderer implements Renderer {
 
         // Enable lights
         gl.glEnable(GL10.GL_LIGHTING);
+        gl.glShadeModel(GL10.GL_SMOOTH);
 
         // Enable Normalize
         gl.glEnable(GL10.GL_NORMALIZE);
@@ -68,8 +74,9 @@ public class GameRenderer implements Renderer {
         // Load hud and its texture
         gl.glPushMatrix();
         hudHP = new HPhud(gl, context);
+        //starship.loadTexture(gl, context, R.raw.colors);
         gl.glPopMatrix();
-        //boat.loadTexture(gl, context, R.raw.woodtexture);
+        seaShell.loadTexture(gl, context, R.raw.colors);
 
         // Set scene light
         light = new Light(gl, GL10.GL_LIGHT0);
@@ -80,7 +87,9 @@ public class GameRenderer implements Renderer {
 
         int[] textureIds = {R.raw.woodtexture};
         for(int i = 0; i < loadedObjects.size(); i++){
-            loadedObjects.get(i).loadTexture(gl, context, textureIds[i]);
+            if(loadedObjects.get(i).textureEnabled){
+                loadedObjects.get(i).loadTexture(gl, context, textureIds[i]);
+            }
         }
 
     }
@@ -99,8 +108,10 @@ public class GameRenderer implements Renderer {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         light.setPosition(new float[]{0, -8, -10, 0});
-        //GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f, 0f, 1f, 0f);
-        GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f,
+
+        /*GLU.gluLookAt(gl, cameraPosX, 2.5f, -20.0f, 0f, 2.5f, 0f,
+                (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);*/
+        GLU.gluLookAt(gl, cameraPosX, eyeCameraY, -20.0f, 0f, centerCameraY, 0f,
                 (float) Math.sin(Math.toRadians(cameraInclZ)), (float) Math.cos(Math.toRadians(cameraInclZ)), 0f);
 
         // Draw background
@@ -131,20 +142,22 @@ public class GameRenderer implements Renderer {
         starship.draw(gl);
         gl.glPopMatrix();
 
-        // Draw 3D Objects
+        // ------ Draw 3D Objects -------
         /*
-        gl.glPushMatrix();
-        gl.glRotatef(-90,0, 1, 0);
-        gl.glScalef(1.5f,1.5f,1.5f);
-        gl.glTranslatef(-8.0f, 0.0f, 0.0f);
-        boat.draw(gl);
-        gl.glPopMatrix();*/
-
         // Update positions
         animator.updateObject();
+        // Regenerate objects in scene
         animator.regenerateObject();
         // Draw animated objects
-        animator.drawAnimated(gl);
+        animator.drawAnimated(gl);*/
+        gl.glPushMatrix();
+        gl.glScalef(1.5f,1.5f,1.5f);
+        //gl.glRotatef(-90,0,1,0);
+        gl.glTranslatef(-2.0f, 0.0f, 0.0f);
+        //gl.glColor4f(1,0,0,0);
+        //lighthouse.draw(gl);
+        seaShell.draw(gl);
+        gl.glPopMatrix();
 
         // -----------  HUD  ----------------
         setOrthographicProjection(gl); // HUD will always be in same perspective
@@ -200,6 +213,15 @@ public class GameRenderer implements Renderer {
                 inclX = 22.0f;
                 break;
 
+            case 'P':
+                eyeCameraY = 15.0f;
+                centerCameraY = 0.0f;
+                break;
+
+            case 'R':
+                eyeCameraY = 2.5f;
+                centerCameraY = 2.5f;
+
             default:
                 break;
         }
@@ -228,6 +250,12 @@ public class GameRenderer implements Renderer {
         } else if(mainActivity.isDownMove()){
             handleMovement('S');
             isMoving = true;
+        } else if(mainActivity.isCamUp()){
+            handleMovement('P');
+            mainActivity.camUp = false;
+        } else if(mainActivity.isRestartCam()){
+            handleMovement('R');
+            mainActivity.restartCam = false;
         }
 
         if(!isMoving){

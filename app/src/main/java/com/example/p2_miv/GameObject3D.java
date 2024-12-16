@@ -39,7 +39,7 @@ public class GameObject3D {
     // Our texture buffer.
     private FloatBuffer texcoordBuffer;
 
-    int[] textures = new int[1];
+    int[] textures = new int[2];
     int numFaceIndexs = 0;
     private float rotX = 0.0f;
     private float rotY = 0.0f;
@@ -180,8 +180,7 @@ public class GameObject3D {
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         gl.glDisable(GL10.GL_LIGHTING);
         gl.glColor4f(1,1,1,1);
-        gl.glRotatef(angle, rotX, rotY, rotZ);
-        gl.glScalef(scaleX, scaleY, scaleZ);
+        gl.glEnable(GL10.GL_COLOR_MATERIAL);
         gl.glEnable(GL10.GL_CULL_FACE);
         gl.glCullFace(GL10.GL_BACK);
         gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -218,12 +217,13 @@ public class GameObject3D {
         gl.glEnable(GL10.GL_LIGHTING);
         gl.glDisable(GL10.GL_TEXTURE_2D);
         gl.glDisable(GL10.GL_CULL_FACE);
+        gl.glDisable(GL10.GL_COLOR_MATERIAL);
     }
 
     public void loadTexture(GL10 gl, Context context, int filename){
         gl.glGenTextures(1, textures, 0); // Generate texture-ID array
-
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);   // Bind to texture ID
+
         // Set up texture filters
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
